@@ -112,7 +112,7 @@ declare module 'graphql' {
     getType(): GraphQLOutputType;
     getParentType(): GraphQLCompositeType;
     getInputType(): GraphQLInputType;
-    getFieldDef(): GraphQLFieldDefinition;
+    getFieldDef(): GraphQLFieldDefinition<any>;
     getDirective(): GraphQLDirective;
     getArgument(): GraphQLArgument;
     }
@@ -446,9 +446,9 @@ declare module 'graphql' {
     // language/kinds.js
     namespace Kind {
         const NAME: string;
-    
+
         // Document
-    
+
         const DOCUMENT: string;
         const OPERATION_DEFINITION: string;
         const VARIABLE_DEFINITION: string;
@@ -456,15 +456,15 @@ declare module 'graphql' {
         const SELECTION_SET: string;
         const FIELD: string;
         const ARGUMENT: string;
-    
+
         // Fragments
-    
+
         const FRAGMENT_SPREAD: string;
         const INLINE_FRAGMENT: string;
         const FRAGMENT_DEFINITION: string;
-    
+
         // Values
-    
+
         const INT: string;
         const FLOAT: string;
         const STRING: string;
@@ -473,19 +473,19 @@ declare module 'graphql' {
         const LIST: string;
         const OBJECT: string;
         const OBJECT_FIELD: string;
-    
+
         // Directives
-    
+
         const DIRECTIVE: string;
-    
+
         // Types
-    
+
         const NAMED_TYPE: string;
         const LIST_TYPE: string;
         const NON_NULL_TYPE: string;
-    
+
         // Type Definitions
-    
+
         const OBJECT_TYPE_DEFINITION: string;
         const FIELD_DEFINITION: string;
         const INPUT_VALUE_DEFINITION: string;
@@ -615,7 +615,7 @@ declare module 'graphql' {
 
     type GraphQLType =
         GraphQLScalarType |
-        GraphQLObjectType |
+        GraphQLObjectType<any> |
         GraphQLInterfaceType |
         GraphQLUnionType |
         GraphQLEnumType |
@@ -636,7 +636,7 @@ declare module 'graphql' {
 
     type GraphQLOutputType =
         GraphQLScalarType |
-        GraphQLObjectType |
+        GraphQLObjectType<any> |
         GraphQLInterfaceType |
         GraphQLUnionType |
         GraphQLEnumType |
@@ -652,7 +652,7 @@ declare module 'graphql' {
     function isLeafType(type: GraphQLType): boolean;
 
     type GraphQLCompositeType =
-        GraphQLObjectType |
+        GraphQLObjectType<any> |
         GraphQLInterfaceType |
         GraphQLUnionType;
 
@@ -666,7 +666,7 @@ declare module 'graphql' {
 
     type GraphQLNullableType =
         GraphQLScalarType |
-        GraphQLObjectType |
+        GraphQLObjectType<any> |
         GraphQLInterfaceType |
         GraphQLUnionType |
         GraphQLEnumType |
@@ -677,7 +677,7 @@ declare module 'graphql' {
 
     type GraphQLNamedType =
         GraphQLScalarType |
-        GraphQLObjectType |
+        GraphQLObjectType<any> |
         GraphQLInterfaceType |
         GraphQLUnionType |
         GraphQLEnumType |
@@ -702,38 +702,38 @@ declare module 'graphql' {
         parseLiteral?: (valueAST: Value) => any;
     }
 
-    export class GraphQLObjectType {
+    export class GraphQLObjectType<T> {
         name: string;
-        constructor(config: GraphQLObjectTypeConfig);
-        getFields(): GraphQLFieldDefinitionMap;
+        constructor(config: GraphQLObjectTypeConfig<T>);
+        getFields(): GraphQLFieldDefinitionMap<T>;
         getInterfaces(): Array<GraphQLInterfaceType>;
         toString(): string;
     }
 
-    interface GraphQLObjectTypeConfig {
+    interface GraphQLObjectTypeConfig<T> {
         name: string;
         interfaces?: GraphQLInterfacesThunk | Array<GraphQLInterfaceType>;
-        fields: GraphQLFieldConfigMapThunk | GraphQLFieldConfigMap;
+        fields: GraphQLFieldConfigMapThunk<T> | GraphQLFieldConfigMap<T>;
         isTypeOf?: GraphQLIsTypeOfFn;
         description?: string;
     }
 
     type GraphQLInterfacesThunk = () => Array<GraphQLInterfaceType>;
 
-    type GraphQLFieldConfigMapThunk = () => GraphQLFieldConfigMap;
+    type GraphQLFieldConfigMapThunk<T> = () => GraphQLFieldConfigMap<T>;
 
-    type GraphQLFieldResolveFn = (
-      source: any,
+    type GraphQLFieldResolveFn<T> = (
+      source: T,
       args: {[argName: string]: any},
       context: any,
       info: GraphQLResolveInfo
     ) => any;
 
-    type GraphQLTypeResolveFn = (
+    type GraphQLTypeResolveFn<T> = (
       value: any,
       context: any,
       info: GraphQLResolveInfo
-    ) => GraphQLObjectType;
+    ) => GraphQLObjectType<T>;
 
     export type GraphQLIsTypeOfFn = (
       source: any,
@@ -753,10 +753,10 @@ declare module 'graphql' {
         variableValues: { [variableName: string]: any };
     }
 
-    interface GraphQLFieldConfig {
+    interface GraphQLFieldConfig<T> {
         type: GraphQLOutputType;
         args?: GraphQLFieldConfigArgumentMap;
-        resolve?: GraphQLFieldResolveFn;
+        resolve?: GraphQLFieldResolveFn<T>;
         deprecationReason?: string;
         description?: string;
     }
@@ -771,16 +771,16 @@ declare module 'graphql' {
         description?: string;
     }
 
-    interface GraphQLFieldConfigMap {
-        [fieldName: string]: GraphQLFieldConfig;
+    interface GraphQLFieldConfigMap<T> {
+        [fieldName: string]: GraphQLFieldConfig<T>;
     }
 
-    interface GraphQLFieldDefinition {
+    interface GraphQLFieldDefinition<T> {
         name: string;
         description: string;
         type: GraphQLOutputType;
         args: Array<GraphQLArgument>;
-        resolve?: GraphQLFieldResolveFn;
+        resolve?: GraphQLFieldResolveFn<T>;
         deprecationReason?: string;
     }
 
@@ -791,48 +791,48 @@ declare module 'graphql' {
         description?: string;
     }
 
-    interface GraphQLFieldDefinitionMap {
-        [fieldName: string]: GraphQLFieldDefinition;
+    interface GraphQLFieldDefinitionMap<T> {
+        [fieldName: string]: GraphQLFieldDefinition<T>;
     }
 
     export class GraphQLInterfaceType {
         name: string;
         description: string;
-        resolveType: GraphQLTypeResolveFn;
-        constructor(config: GraphQLInterfaceTypeConfig);
-        getFields(): GraphQLFieldDefinitionMap;
-        getPossibleTypes(): Array<GraphQLObjectType>;
-        isPossibleType(type: GraphQLObjectType): boolean;
-        getObjectType(value: any, info: GraphQLResolveInfo): GraphQLObjectType;
+        resolveType: GraphQLTypeResolveFn<any>;
+        constructor(config: GraphQLInterfaceTypeConfig<any>);
+        getFields(): GraphQLFieldDefinitionMap<any>;
+        getPossibleTypes(): Array<GraphQLObjectType<any>>;
+        isPossibleType(type: GraphQLObjectType<any>): boolean;
+        getObjectType(value: any, info: GraphQLResolveInfo): GraphQLObjectType<any>;
         toString(): string;
     }
 
-    interface GraphQLInterfaceTypeConfig {
+    interface GraphQLInterfaceTypeConfig<T> {
         name: string;
-        fields: GraphQLFieldConfigMapThunk | GraphQLFieldConfigMap;
-        resolveType?: GraphQLTypeResolveFn;
+        fields: GraphQLFieldConfigMapThunk<T> | GraphQLFieldConfigMap<T>;
+        resolveType?: GraphQLTypeResolveFn<any>;
         description?: string;
     }
 
     export class GraphQLUnionType {
         name: string;
         description: string;
-        resolveType: GraphQLTypeResolveFn;
+        resolveType: GraphQLTypeResolveFn<any>;
         constructor(config: GraphQLUnionTypeConfig);
-        getTypes(): Array<GraphQLObjectType>
+        getTypes(): Array<GraphQLObjectType<any>>
         toString(): string;
     }
 
 
     interface GraphQLUnionTypeConfig {
         name: string;
-        types: Array<GraphQLObjectType>;
+        types: Array<GraphQLObjectType<any>>;
         /**
         * Optionally provide a custom type resolver function. If one is not provided,
         * the default implementation will call `isTypeOf` on each implementing
         * Object type.
         */
-        resolveType?: GraphQLTypeResolveFn;
+        resolveType?: GraphQLTypeResolveFn<any>;
         description?: string;
     }
 
@@ -946,15 +946,15 @@ declare module 'graphql' {
 
     // type/introspection.js
 
-    var __Schema: GraphQLObjectType;
+    var __Schema: GraphQLObjectType<any>;
 
     type TypeKind = {[key: string]: string};
 
-    var SchemaMetaFieldDef: GraphQLFieldDefinition;
+    var SchemaMetaFieldDef: GraphQLFieldDefinition<any>;
 
-    var TypeMetaFieldDef: GraphQLFieldDefinition;
+    var TypeMetaFieldDef: GraphQLFieldDefinition<any>;
 
-    var TypeNameMetaFieldDef: GraphQLFieldDefinition;
+    var TypeNameMetaFieldDef: GraphQLFieldDefinition<any>;
 
     // type/scalars.js
 
@@ -968,22 +968,22 @@ declare module 'graphql' {
 
     export class GraphQLSchema {
         constructor(config: GraphQLSchemaConfig);
-        getQueryType(): GraphQLObjectType;
-        getMutationType(): GraphQLObjectType;
-        getSubscriptionType(): GraphQLObjectType;
+        getQueryType(): GraphQLObjectType<any>;
+        getMutationType(): GraphQLObjectType<any>;
+        getSubscriptionType(): GraphQLObjectType<any>;
         getTypeMap(): TypeMap;
         getType(name: string): GraphQLType;
         getDirectives(): Array<GraphQLDirective>;
         getDirective(name: string): GraphQLDirective;
-        getPossibleTypes(abstractType: GraphQLAbstractType): Array<GraphQLObjectType>;
+        getPossibleTypes(abstractType: GraphQLAbstractType): Array<GraphQLObjectType<any>>;
     }
 
     type TypeMap = { [typeName: string]: GraphQLType };
 
     interface GraphQLSchemaConfig {
-        query: GraphQLObjectType;
-        mutation?: GraphQLObjectType;
-        subscription?: GraphQLObjectType;
+        query: GraphQLObjectType<any>;
+        mutation?: GraphQLObjectType<any>;
+        subscription?: GraphQLObjectType<any>;
         directives?: Array<GraphQLDirective>;
         types?: Array<GraphQLNamedType>;
     }
@@ -999,7 +999,7 @@ declare module 'graphql' {
     getType(): GraphQLOutputType;
     getParentType(): GraphQLCompositeType;
     getInputType(): GraphQLInputType;
-    getFieldDef(): GraphQLFieldDefinition;
+    getFieldDef(): GraphQLFieldDefinition<any>;
     getDirective(): GraphQLDirective;
     getArgument(): GraphQLArgument;
     enter(node: Node): void;
@@ -1010,8 +1010,8 @@ declare module 'graphql' {
     schema: GraphQLSchema,
     parentType: GraphQLType,
     fieldAST: Field
-    ): GraphQLFieldDefinition;
-    
+    ): GraphQLFieldDefinition<any>;
+
     // utilities/valueFromAST.js
     function valueFromAST(
         valueAST: Value,
@@ -1024,11 +1024,11 @@ declare module 'graphql' {
 
     // utilities/extendSchema.js
     function extendSchema(schema: GraphQLSchema, documentAST: Document): GraphQLSchema
-    
+
     // utilities/schemaPrinter.js
     function printSchema(schema: GraphQLSchema): string;
     function printIntrospectionSchema(schema: GraphQLSchema): string;
-    
+
     // type/directives.js
     enum DirectiveLocationEnum {
     QUERY,
