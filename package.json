@@ -1,20 +1,20 @@
 {
   "name": "typed-graphql",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Type definitions for graphql-js",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "typings": "./graphql.d.ts",
+  "types": "graphql.d.ts",
+  "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nitintutlani/typed-graphql.git"
+    "url": "git+https://github.com/kube/typed-graphql.git"
   },
-  "author": "Nitin Tutlani <nitintutlani@yahoo.com>",
-  "license": "ISC",
+  "authors": [
+    "Chris Feijoo <hello@kube.io>",
+    "Nitin Tutlani <nitintutlani@yahoo.com>"
+  ],
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NewSpring/typed-graphql/issues"
+    "url": "https://github.com/kube/typed-graphql/issues"
   },
-  "homepage": "https://github.com/NewSpring/typed-graphql#readme"
+  "homepage": "https://github.com/kube/typed-graphql#readme"
 }
